@@ -1,5 +1,5 @@
 #!/bin/env python3
-import sys
+from sys import argv
 from urllib.request import Request, urlopen
 
 
@@ -32,17 +32,20 @@ def inSkip(url, skip):
     return False
 
 
+urlsFile = argv[1]
+skipFile = argv[2]
+addFile = argv[3]
+outFile = argv[4]
+
 urls = []
-with open(sys.argv[1]) as f:
+with open(urlsFile) as f:
     for i in f:
         urls.append(i.strip())
 
 skip = []
-
-if len(sys.argv) > 2:
-    with open(sys.argv[2]) as f:
-        for i in f:
-            skip.append(i.strip())
+with open(skipFile) as f:
+    for i in f:
+        skip.append(i.strip())
 
 
 data = []
@@ -60,30 +63,51 @@ for u in urls:
 
         if '\n' in r:
             for i in r.split('\n'):
-                i = i.strip()
-                if i == '':
-                    continue
-                if i == 'Malvertising list by Disconnect':
-                    continue
-                if '#' in i:
-                    continue
-                if '0.0.0.0' in i or '127.0.0.1' in i:
-                    i = i.split()[1].strip()
-                if i == '':
-                    continue
-                if 'localhost' in i or i == 'broadcasthost' or i == 'local' or 'ip6-localnet' in i or 'ip6-mcastprefix' in i or 'ip6-all' in i or i == '0.0.0.0':
-                    continue
-                if len(skip) > 0:
-                    if inSkip(i, skip):
+                try:
+                    org = i
+                    i = i.strip()
+                    if i == '':
                         continue
-                data.append(i)
+                    if i == 'Malvertising list by Disconnect':
+                        continue
+                    if '#' in i:
+                        continue
+                    if '0.0.0.0' in i or '127.0.0.1' in i:
+                        if len(i.split()) > 1:
+                            i = i.split()[1].strip()
+                        else:
+                            continue
+                    if i == '':
+                        continue
+                    if 'localhost' in i or i == 'broadcasthost' or i == 'local' or 'ip6-localnet' in i or 'ip6-mcastprefix' in i or 'ip6-all' in i or i == '0.0.0.0':
+                        continue
+                    if len(skip) > 0:
+                        if inSkip(i, skip):
+                            continue
+                    if ';' in i:
+                        i = i.split(';')[0].strip()
+                    if ':' in i:
+                        i = i.split(':')[0].strip()
+                    if '@' in i:
+                        i = i.split('@')[0].strip()
+                    data.append(i)
+                except Exception as e:
+                    print(f'Failed parsing {u} {e} {org} {i}')
+                    continue
         data = list(set(data))
     except Exception as e:
         print(f'Failed getting {u} {e}')
         continue
+
+print('Adding custom hosts')
+with open(addFile) as f:
+    for i in f:
+        data.append(i.strip())
+
 print('Sorting list')
+data = list(set(data))
 data = sorted(data)
 
-print('Writing list')
-with open('outHost.txt', 'w') as f:
+print(f'Writing list to {outFile}')
+with open(outFile, 'w') as f:
     f.writelines('%s\n' % d for d in data)
