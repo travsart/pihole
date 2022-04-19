@@ -1,26 +1,11 @@
 #!/bin/env python3
 from sys import argv
-from urllib.request import Request, urlopen
-
+from requests import get
+from argparse import ArgumentParser
+from os.path import abspath
 
 HEADERS = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.163 Safari/537.36'}
-
-
-def get(url):
-    ret = ''
-    try:
-        req = Request(url, headers=HEADERS)
-        res = urlopen(req)
-        ret = res.read()
-        ret = ret.decode()
-    except UnicodeDecodeError:
-        ret = ret.decode('latin-1')
-    except Exception as e:
-        print(f'Problem getting url {url} with exception {e}')
-
-    return ret
-
 
 def inSkip(url, skip):
     try:
@@ -31,11 +16,17 @@ def inSkip(url, skip):
         pass
     return False
 
+parser = ArgumentParser("Get pihole block hosts")
+parser.add_argument('-u', '--urlsfile', help='Path to url file')
+parser.add_argument('-s', '--skipfile', help='Path to skip urls file')
+parser.add_argument('-a', '--addfile', help='Path to add urls file')
+parser.add_argument('-o', '--outfile', default='out.txt', help='Path to output file')
+args = parser.parse_args()
 
-urlsFile = argv[1]
-skipFile = argv[2]
-addFile = argv[3]
-outFile = argv[4]
+urlsFile = abspath(args.urlsfile)
+skipFile = abspath(args.urlsfile)
+addFile = abspath(args.urlsfile)
+outFile = abspath(args.urlsfile)
 
 urls = []
 with open(urlsFile) as f:
@@ -47,7 +38,9 @@ with open(skipFile) as f:
     for i in f:
         skip.append(i.strip())
 
-
+headers = {
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.127 Safari/537.36 Edg/100.0.1185.44'
+}
 data = []
 
 print('Getting hosts')
@@ -55,10 +48,10 @@ for u in urls:
     try:
         print(f'Getting {u}')
         r = get(u)
-        if r == '':
+        if r.ok == False:
             print(f'failed to get url {u}')
             continue
-
+        r = r.text
         r = r.replace('\r', '')
 
         if '\n' in r:
@@ -75,7 +68,7 @@ for u in urls:
                     if '0.0.0.0' in i or '127.0.0.1' in i:
                         if len(i.split()) > 1:
                             i = i.split()[1].strip()
-                        else:
+                        else: 
                             continue
                     if i == '':
                         continue
@@ -90,7 +83,8 @@ for u in urls:
                         i = i.split(':')[0].strip()
                     if '@' in i:
                         i = i.split('@')[0].strip()
-                    data.append(i)
+                    if i.isascii():
+                        data.append(i)
                 except Exception as e:
                     print(f'Failed parsing {u} {e} {org} {i}')
                     continue
