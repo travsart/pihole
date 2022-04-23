@@ -19,7 +19,7 @@ https://blocklistproject.github.io/Lists/tiktok.txt
 https://blocklistproject.github.io/Lists/torrent.txt
 https://blocklistproject.github.io/Lists/tracking.txt
 https://blocklistproject.github.io/Lists/vaping.txt
-https://github.com/kboghdady/youTube_ads_4_pi-hole/blob/master/black.list
+https://raw.githubusercontent.com/kboghdady/youTube_ads_4_pi-hole/master/black.list
 https://gitlab.com/quidsup/notrack-blocklists/raw/master/notrack-blocklist.txt
 https://gitlab.com/quidsup/notrack-blocklists/raw/master/notrack-malware.txt
 https://hostfiles.frogeye.fr/firstparty-trackers-hosts.txt
