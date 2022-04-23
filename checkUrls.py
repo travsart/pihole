@@ -24,6 +24,7 @@ with open(urlsFile) as f:
 
 print('Checking urls')
 o = []
+index = 1
 for u in urls:
     try:
         print(f'Getting {u}')
@@ -34,6 +35,10 @@ for u in urls:
         r = r.text
         l = r.replace('\r', '').split('\n')
         if len(l) > 0:
+            with open(f'file{index}','w') as f:
+                f.write(f'{u}\n')
+                f.write(r)
+            index += 1
             o.append(u)
     except Exception as e:
         print(f'Failed to get {u} {e}')

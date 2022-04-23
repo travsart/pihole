@@ -1,11 +1,30 @@
 #!/bin/env python3
-from sys import argv
-from requests import get
+#from requests import get
 from argparse import ArgumentParser
 from os.path import abspath
+from os import fstat
+#import gzip
+# from urllib.request import Request, urlopen
+
+from requests import get
 
 HEADERS = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.163 Safari/537.36'}
+MAX_SIZE = 1024 * 1024 * 60 # 60 MB
+
+# def get(url):
+#     ret = ''
+#     try:
+#         req = Request(url, headers=HEADERS)
+#         res = urlopen(req)
+#         ret = res.read()
+#         ret = ret.decode()
+#     except UnicodeDecodeError:
+#         ret = ret.decode('latin-1')
+#     except Exception as e:
+#         print(f'Problem getting url {url} with exception {e}')
+
+#     return ret
 
 def inSkip(url, skip):
     try:
@@ -16,6 +35,68 @@ def inSkip(url, skip):
         pass
     return False
 
+def writeFiles(data, base):
+    index = 1
+    while len(data) > 0:
+        f =  open(f'{base}{index}.txt', 'w')
+
+        while len(data) > 0:
+            d = data.pop()
+            line = f'{d}\n'
+            f.write(line)
+            size = fstat(f.fileno()).st_size
+
+            if(size > MAX_SIZE):
+                break
+        index += 1
+
+def parse(r, data):
+    r = r.replace('\r', '')
+
+    if '\n' in r:
+        for i in r.split('\n'):
+            try:
+                org = i
+                i = i.strip()
+                if i == '':
+                    continue
+                if i == 'Malvertising list by Disconnect':
+                    continue
+                if '#' in i:
+                    continue
+                if '0.0.0.0' in i or '127.0.0.1' in i:
+                    if len(i.split()) > 1:
+                        i = i.split()[1].strip()
+                    else:
+                        continue
+                if i == '':
+                    continue
+                if 'localhost' in i or i == 'broadcasthost' or i == 'local' or 'ip6-localnet' in i or 'ip6-mcastprefix' in i or 'ip6-all' in i or i == '0.0.0.0':
+                    continue
+                if len(skip) > 0:
+                    if inSkip(i, skip):
+                        continue
+                if '.' not in i or i.startswith('.'):
+                    continue
+                if ';' in i:
+                    i = i.split(';')[0].strip()
+                if ':' in i:
+                    i = i.split(':')[0].strip()
+                if '@' in i:
+                    i = i.split('@')[0].strip()
+                if '|' in i:
+                    i = i.replace('|', '')
+                if '^' in i:
+                    i = i.replace('^', '')
+                if i.startswith('-'):
+                    i = i[1:]
+                if i.isascii():
+                    data.append(i)
+            except Exception as e:
+                print(f'Failed parsing {u} {e} {org} {i}')
+                continue
+    return list(set(data))
+
 parser = ArgumentParser("Get pihole block hosts")
 parser.add_argument('-u', '--urlsfile', help='Path to url file')
 parser.add_argument('-s', '--skipfile', help='Path to skip urls file')
@@ -24,9 +105,9 @@ parser.add_argument('-o', '--outfile', default='out.txt', help='Path to output f
 args = parser.parse_args()
 
 urlsFile = abspath(args.urlsfile)
-skipFile = abspath(args.urlsfile)
-addFile = abspath(args.urlsfile)
-outFile = abspath(args.urlsfile)
+skipFile = abspath(args.skipfile)
+addFile = abspath(args.addfile)
+outFile = abspath(args.outfile)
 
 urls = []
 with open(urlsFile) as f:
@@ -48,47 +129,15 @@ for u in urls:
     try:
         print(f'Getting {u}')
         r = get(u)
+        # if r == '':
+        #     print(f'failed to get url {u}')
+        #     continue
         if r.ok == False:
             print(f'failed to get url {u}')
             continue
         r = r.text
-        r = r.replace('\r', '')
 
-        if '\n' in r:
-            for i in r.split('\n'):
-                try:
-                    org = i
-                    i = i.strip()
-                    if i == '':
-                        continue
-                    if i == 'Malvertising list by Disconnect':
-                        continue
-                    if '#' in i:
-                        continue
-                    if '0.0.0.0' in i or '127.0.0.1' in i:
-                        if len(i.split()) > 1:
-                            i = i.split()[1].strip()
-                        else: 
-                            continue
-                    if i == '':
-                        continue
-                    if 'localhost' in i or i == 'broadcasthost' or i == 'local' or 'ip6-localnet' in i or 'ip6-mcastprefix' in i or 'ip6-all' in i or i == '0.0.0.0':
-                        continue
-                    if len(skip) > 0:
-                        if inSkip(i, skip):
-                            continue
-                    if ';' in i:
-                        i = i.split(';')[0].strip()
-                    if ':' in i:
-                        i = i.split(':')[0].strip()
-                    if '@' in i:
-                        i = i.split('@')[0].strip()
-                    if i.isascii():
-                        data.append(i)
-                except Exception as e:
-                    print(f'Failed parsing {u} {e} {org} {i}')
-                    continue
-        data = list(set(data))
+        data = parse(r, data)
     except Exception as e:
         print(f'Failed getting {u} {e}')
         continue
@@ -102,6 +151,12 @@ print('Sorting list')
 data = list(set(data))
 data = sorted(data)
 
-print(f'Writing list to {outFile}')
-with open(outFile, 'w') as f:
-    f.writelines('%s\n' % d for d in data)
+writeFiles(data, outFile)
+
+# Use when pihole supports compressed addlists
+# print(f'Writing list to {outFile}.gz')
+# with gzip.open(f'{outFile}.gz', 'w') as f:
+#     for d in data:
+#         line = f'{d}\n'.encode()
+#         f.write(line)
+
