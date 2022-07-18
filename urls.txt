@@ -24,7 +24,7 @@ https://gitlab.com/quidsup/notrack-blocklists/raw/master/notrack-blocklist.txt
 https://gitlab.com/quidsup/notrack-blocklists/raw/master/notrack-malware.txt
 https://hostfiles.frogeye.fr/firstparty-trackers-hosts.txt
 https://hostfiles.frogeye.fr/multiparty-trackers-hosts.txt
-https://hostsfile.mine.nu/hosts0.txt
+http://hostsfile.mine.nu/hosts0.txt
 https://hostsfile.org/Downloads/hosts.txt
 https://mkb2091.github.io/blockconvert/output/domains.txt
 https://osint.digitalside.it/Threat-Intel/lists/latestdomains.txt
