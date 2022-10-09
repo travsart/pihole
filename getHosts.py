@@ -105,8 +105,6 @@ parser.add_argument('-o', '--outfile', default='out.txt', help='Path to output f
 args = parser.parse_args()
 
 urlsFile = abspath(args.urlsfile)
-skipFile = abspath(args.skipfile)
-addFile = abspath(args.addfile)
 outFile = abspath(args.outfile)
 
 urls = []
@@ -115,9 +113,20 @@ with open(urlsFile) as f:
         urls.append(i.strip())
 
 skip = []
-with open(skipFile) as f:
-    for i in f:
-        skip.append(i.strip())
+if args.skipfile is not None:
+    skipFile = abspath(args.skipfile)
+
+    with open(skipFile) as f:
+        for i in f:
+            skip.append(i.strip())
+
+addList = []
+if args.addfile is not None:
+    addFile = abspath(args.addfile)
+
+    with open(addFile) as f:
+        for i in f:
+            addList.append(i.strip())
 
 headers = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.127 Safari/537.36 Edg/100.0.1185.44'
@@ -143,9 +152,8 @@ for u in urls:
         continue
 
 print('Adding custom hosts')
-with open(addFile) as f:
-    for i in f:
-        data.append(i.strip())
+for i in addList:
+    data.append(i)
 
 print('Sorting list')
 data = list(set(data))
