@@ -2,3 +2,4 @@ https://github.com/chadmayfield/pihole-blocklists/raw/master/lists/pi_blocklist_
 https://blocklistproject.github.io/Lists/porn.txt
 https://raw.githubusercontent.com/chadmayfield/my-pihole-blocklists/master/lists/pi_blocklist_porn_top1m.list
 https://v.firebog.net/hosts/Prigent-Adult.txt
+https://dbl.oisd.nl/nsfw/

@@ -79,3 +79,7 @@ https://www.github.developerdan.com/hosts/lists/dating-services-extended.txt
 https://www.github.developerdan.com/hosts/lists/tracking-aggressive-extended.txt
 https://www.joewein.net/dl/bl/dom-bl-base.txt
 https://www.malwaredomainlist.com/hostslist/hosts.txt
+https://dbl.oisd.nl/basic/
+https://www.github.developerdan.com/hosts/lists/dating-services-extended.txt
+https://www.github.developerdan.com/hosts/lists/hate-and-junk-extended.txt
+https://www.github.developerdan.com/hosts/lists/tracking-aggressive-extended.txt
