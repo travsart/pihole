@@ -1,5 +1,6 @@
 #!/bin/env python3
 from argparse import ArgumentParser
+from locale import strcoll
 from os.path import abspath
 from os import fstat
 
@@ -33,7 +34,7 @@ def writeFiles(data, base):
                 break
         index += 1
 
-def parse(r, data):
+def parse(r:str, data: list, ignore:list):
     r = r.replace('\r', '')
 
     if '\n' in r:
@@ -74,7 +75,8 @@ def parse(r, data):
                 if i.startswith('-'):
                     i = i[1:]
                 if i.isascii():
-                    data.append(i)
+                    if i not in ignore:
+                        data.append(i)
             except Exception as e:
                 print(f'Failed parsing {u} {e} {org} {i}')
                 continue
@@ -84,6 +86,7 @@ parser = ArgumentParser("Get pihole block hosts")
 parser.add_argument('-u', '--urlsfile', help='Path to url file')
 parser.add_argument('-s', '--skipfile', help='Path to skip urls file')
 parser.add_argument('-a', '--addfile', help='Path to add urls file')
+parser.add_argument('-i', '--ignore', help='Path to ignore urls file')
 parser.add_argument('-o', '--outfile', default='out.txt', help='Path to output file')
 args = parser.parse_args()
 
@@ -111,25 +114,27 @@ if args.addfile is not None:
         for i in f:
             addList.append(i.strip())
 
-headers = {
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.127 Safari/537.36 Edg/100.0.1185.44'
-}
+ignore = []
+if args.ignore is not None:
+    ignoreFile = abspath(args.ignore)
+
+    with open(ignore) as f:
+        for i in f:
+            ignore.append(i.strip())
+
 data = []
 
 print('Getting hosts')
 for u in urls:
     try:
         print(f'Getting {u}')
-        r = get(u)
-        # if r == '':
-        #     print(f'failed to get url {u}')
-        #     continue
+        r = get(u, headers=HEADERS)
         if r.ok == False:
             print(f'failed to get url {u}')
             continue
         r = r.text
 
-        data = parse(r, data)
+        data = parse(r, data, ignore)
     except Exception as e:
         print(f'Failed getting {u} {e}')
         continue
