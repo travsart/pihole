@@ -8,7 +8,8 @@ from requests import get
 
 HEADERS = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.163 Safari/537.36'}
-MAX_SIZE = 1024 * 1024 * 60 # 60 MB
+MAX_SIZE = 1024 * 1024 * 60  # 60 MB
+
 
 def inSkip(url, skip):
     try:
@@ -19,10 +20,11 @@ def inSkip(url, skip):
         pass
     return False
 
+
 def writeFiles(data, base):
     index = 1
     while len(data) > 0:
-        f =  open(f'{base}{index}.txt', 'w')
+        f = open(f'{base}{index}.txt', 'w')
 
         while len(data) > 0:
             d = data.pop()
@@ -34,7 +36,8 @@ def writeFiles(data, base):
                 break
         index += 1
 
-def parse(r:str, data: list, ignore:list):
+
+def parse(r: str, data: list, ignore: list):
     r = r.replace('\r', '')
 
     if '\n' in r:
@@ -82,12 +85,14 @@ def parse(r:str, data: list, ignore:list):
                 continue
     return list(set(data))
 
+
 parser = ArgumentParser("Get pihole block hosts")
 parser.add_argument('-u', '--urlsfile', help='Path to url file')
 parser.add_argument('-s', '--skipfile', help='Path to skip urls file')
 parser.add_argument('-a', '--addfile', help='Path to add urls file')
 parser.add_argument('-i', '--ignore', help='Path to ignore urls file')
-parser.add_argument('-o', '--outfile', default='out.txt', help='Path to output file')
+parser.add_argument('-o', '--outfile', default='out.txt',
+                    help='Path to output file')
 args = parser.parse_args()
 
 urlsFile = abspath(args.urlsfile)
@@ -118,7 +123,7 @@ ignore = []
 if args.ignore is not None:
     ignoreFile = abspath(args.ignore)
 
-    with open(ignore) as f:
+    with open(ignoreFile) as f:
         for i in f:
             ignore.append(i.strip())
 
@@ -155,4 +160,3 @@ writeFiles(data, outFile)
 #     for d in data:
 #         line = f'{d}\n'.encode()
 #         f.write(line)
-
