@@ -1,30 +1,13 @@
 #!/bin/env python3
-#from requests import get
 from argparse import ArgumentParser
 from os.path import abspath
 from os import fstat
-#import gzip
-# from urllib.request import Request, urlopen
 
 from requests import get
 
 HEADERS = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.163 Safari/537.36'}
 MAX_SIZE = 1024 * 1024 * 60 # 60 MB
-
-# def get(url):
-#     ret = ''
-#     try:
-#         req = Request(url, headers=HEADERS)
-#         res = urlopen(req)
-#         ret = res.read()
-#         ret = ret.decode()
-#     except UnicodeDecodeError:
-#         ret = ret.decode('latin-1')
-#     except Exception as e:
-#         print(f'Problem getting url {url} with exception {e}')
-
-#     return ret
 
 def inSkip(url, skip):
     try:
