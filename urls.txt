@@ -59,7 +59,7 @@ https://sysctl.org/cameleon/hosts
 https://urlhaus.abuse.ch/downloads/hostfile/
 https://v.firebog.net/hosts/AdguardDNS.txt
 https://v.firebog.net/hosts/Admiral.txt
-https://v.firebog.net/hosts/BillStearns.txt
+https://v.firebog.net/hosts/Easylist-Dutch.txt
 https://v.firebog.net/hosts/Easylist.txt
 https://v.firebog.net/hosts/Easyprivacy.txt
 https://v.firebog.net/hosts/Kowabit.txt
@@ -67,7 +67,8 @@ https://v.firebog.net/hosts/neohostsbasic.txt
 https://v.firebog.net/hosts/Prigent-Ads.txt
 https://v.firebog.net/hosts/Prigent-Crypto.txt
 https://v.firebog.net/hosts/Prigent-Malware.txt
-https://v.firebog.net/hosts/Shalla-mal.txt
+https://v.firebog.net/hosts/RPiList-Malware.txt
+https://v.firebog.net/hosts/RPiList-Phishing.txt
 https://v.firebog.net/hosts/static/w3kbl.txt
 https://winhelp2002.mvps.org/hosts.txt
 https://www.dshield.org/feeds/suspiciousdomains_High.txt
@@ -78,7 +79,8 @@ https://www.github.developerdan.com/hosts/lists/dating-services-extended.txt
 https://www.github.developerdan.com/hosts/lists/tracking-aggressive-extended.txt
 https://www.joewein.net/dl/bl/dom-bl-base.txt
 https://www.malwaredomainlist.com/hostslist/hosts.txt
-https://dbl.oisd.nl/basic/
+https://dbl.oisd.nl/
 https://www.github.developerdan.com/hosts/lists/dating-services-extended.txt
 https://www.github.developerdan.com/hosts/lists/hate-and-junk-extended.txt
 https://www.github.developerdan.com/hosts/lists/tracking-aggressive-extended.txt
+https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts

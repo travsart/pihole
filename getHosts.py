@@ -9,6 +9,7 @@ from requests import get
 HEADERS = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.163 Safari/537.36'}
 MAX_SIZE = 1024 * 1024 * 60  # 60 MB
+WHOLE_FILE = 'whole.txt'
 
 
 def inSkip(url, skip):
@@ -37,12 +38,12 @@ def writeFiles(data, base):
         index += 1
 
 
-def parse(r: str, data: list, ignore: list):
+def parse(r: str, data: list, ignore: list, raw: list):
     r = r.replace('\r', '')
-
     if '\n' in r:
         for i in r.split('\n'):
             try:
+                raw.append(i)
                 org = i
                 i = i.strip()
                 if i == '':
@@ -87,6 +88,7 @@ def parse(r: str, data: list, ignore: list):
 
 
 parser = ArgumentParser("Get pihole block hosts")
+parser.add_argument('-r', '--raw', help='Write out a raw file', action='store_true')
 parser.add_argument('-u', '--urlsfile', help='Path to url file')
 parser.add_argument('-s', '--skipfile', help='Path to skip urls file')
 parser.add_argument('-a', '--addfile', help='Path to add urls file')
@@ -132,6 +134,7 @@ data = []
 print('Getting hosts')
 for u in urls:
     try:
+        raw = []
         print(f'Getting {u}')
         r = get(u, headers=HEADERS)
         if r.ok == False:
@@ -139,7 +142,14 @@ for u in urls:
             continue
         r = r.text
 
-        data = parse(r, data, ignore)
+        data = parse(r, data, ignore, raw)
+
+        if args.raw:
+            with open(WHOLE_FILE, 'a') as f:
+                for i in raw:
+                    f.write(i)
+                    f.write('\n')
+
     except Exception as e:
         print(f'Failed getting {u} {e}')
         continue
