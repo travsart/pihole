@@ -144,7 +144,7 @@ for u in urls:
         r = r.text
         
         if args.download:
-            with open(join('out', str(uuid4())), 'w') as f:
+            with open(join('out', str(uuid4()) + '_download.txt'), 'w') as f:
                 f.write(u)
                 f.write('\n')
                 f.write(r)
