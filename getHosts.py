@@ -1,9 +1,9 @@
 #!/bin/env python3
 from argparse import ArgumentParser
 from locale import strcoll
-from os.path import abspath
+from os.path import abspath, join
 from os import fstat
-
+from uuid import uuid4
 from requests import get
 
 HEADERS = {
@@ -93,6 +93,7 @@ parser.add_argument('-u', '--urlsfile', help='Path to url file')
 parser.add_argument('-s', '--skipfile', help='Path to skip urls file')
 parser.add_argument('-a', '--addfile', help='Path to add urls file')
 parser.add_argument('-i', '--ignore', help='Path to ignore urls file')
+parser.add_argument('-d', '--download', help='Write downloaded urls', action='store_true')
 parser.add_argument('-o', '--outfile', default='out.txt',
                     help='Path to output file')
 args = parser.parse_args()
@@ -141,14 +142,20 @@ for u in urls:
             print(f'failed to get url {u}')
             continue
         r = r.text
+        
+        if args.download:
+            with open(join('out', str(uuid4())), 'w') as f:
+                f.write(u)
+                f.write('\n')
+                f.write(r)
+        else:
+            data = parse(r, data, ignore, raw)
 
-        data = parse(r, data, ignore, raw)
-
-        if args.raw:
-            with open(WHOLE_FILE, 'a') as f:
-                for i in raw:
-                    f.write(i)
-                    f.write('\n')
+            if args.raw:
+                with open(WHOLE_FILE, 'a') as f:
+                    for i in raw:
+                        f.write(i)
+                        f.write('\n')
 
     except Exception as e:
         print(f'Failed getting {u} {e}')
