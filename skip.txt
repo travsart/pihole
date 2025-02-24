@@ -31,3 +31,8 @@ tfbnw.net
 fbsbx.com
 fb.com
 fbcdn.net
+coinbase.com
+api.msn.com
+superapp.msn.com
+signal.org
+stripe.com
