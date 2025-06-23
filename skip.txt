@@ -37,3 +37,4 @@ superapp.msn.com
 signal.org
 stripe.com
 storage.signal.org
+superapp.msn.com
